@@ -6,7 +6,7 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: Request) {
   try {
-    const { code, studentName, answers } = await req.json();
+    const { code, studentName, studentId, answers } = await req.json();
 
     const { data: exam } = await supabase.from("exams").select("*").eq("code", code.toUpperCase()).single();
     if (!exam) return NextResponse.json({ error: "Exam not found" }, { status: 404 });
@@ -54,7 +54,12 @@ ${JSON.stringify(descriptive.map((q) => ({
     const maxScore = questions.reduce((s, q) => s + q.marks, 0);
 
     await supabase.from("submissions").insert({
-      exam_code: code.toUpperCase(), student_name: studentName, score, max_score: maxScore, results,
+      exam_code: code.toUpperCase(),
+      student_name: studentName,
+      student_id: studentId,
+      score,
+      max_score: maxScore,
+      results,
     });
 
     return NextResponse.json({ score, maxScore, results });

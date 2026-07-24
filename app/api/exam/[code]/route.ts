@@ -10,6 +10,8 @@ export async function GET(_req: Request, { params }: { params: Promise<{ code: s
     id: q.id, type: q.type, difficulty: q.difficulty,
     question: q.question, options: q.options, marks: q.marks,
   }));
-
-  return NextResponse.json({ title: data.title, questions: safeQuestions, durationMinutes: data.duration_minutes });
+  return NextResponse.json({
+    title: data.title, questions: safeQuestions,
+    durationMinutes: data.duration_minutes, examinerName: data.examiner_name,
+  });
 }
