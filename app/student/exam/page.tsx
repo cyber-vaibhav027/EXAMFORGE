@@ -1,12 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 type Q = { id:number; type:string; difficulty:string; question:string; options:string[]; marks:number };
 type Res = { id:number; awarded:number; max:number; feedback:string };
 
-export default function TakeExam() {
+function ExamContent() {
   const router = useRouter();
   const code = useSearchParams().get("code") || "";
   const [stage, setStage] = useState<"loading"|"exam"|"done">("loading");
@@ -158,5 +158,13 @@ export default function TakeExam() {
       </ol>
       <a href="/student" className="inline-block mt-6 text-sm text-[#4C3F91] underline">← Back to dashboard</a>
     </main>
+  );
+}
+
+export default function TakeExam() {
+  return (
+    <Suspense fallback={<main className="min-h-screen flex items-center justify-center"><p className="text-neutral-500">Loading…</p></main>}>
+      <ExamContent />
+    </Suspense>
   );
 }
