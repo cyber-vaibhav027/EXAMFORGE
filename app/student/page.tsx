@@ -53,9 +53,9 @@ export default function Student() {
       <div className="w-full max-w-sm rounded-2xl border border-neutral-200 bg-white p-8">
         <h1 className="serif text-2xl mb-6">Join an exam</h1>
         <label className="text-sm text-neutral-600">Your name</label>
-        <input className={`${field} mb-4`} value={name} onChange={e=>setName(e.target.value)} />
+        <input className={`${field} mb-4`} value={name} onChange={e=>setName(e.target.value)} required />
         <label className="text-sm text-neutral-600">Exam code</label>
-        <input className={`${field} mb-4 uppercase tracking-widest`} value={code} onChange={e=>setCode(e.target.value.toUpperCase())} />
+        <input className={`${field} mb-4 uppercase tracking-widest`} value={code} onChange={e=>setCode(e.target.value.toUpperCase())} required/>
         {error && <p className="text-sm text-red-500 mb-3">{error}</p>}
         <button onClick={join} disabled={!name || !code}
           className="w-full rounded-lg bg-[#4C3F91] text-white px-5 py-2.5 text-sm font-medium disabled:opacity-40">Start</button>
@@ -99,28 +99,41 @@ export default function Student() {
     </main>
   );
 
-  const pct = maxScore ? Math.round((score/maxScore)*100) : 0;
-  return (
-    <main className="max-w-3xl mx-auto px-6 py-12">
-      <div className="rounded-2xl border border-neutral-200 bg-white p-8 text-center mb-8">
-        <p className="text-sm text-neutral-500 mb-1">{name} · {title}</p>
-        <p className="serif text-5xl text-[#4C3F91]">{score} / {maxScore}</p>
-        <p className="text-neutral-500 mt-1">{pct}%</p>
+const pct = maxScore ? Math.round((score/maxScore)*100) : 0;
+const ringColor = pct >= 80 ? "#22c55e" : pct >= 50 ? "#f59e0b" : "#ef4444";
+const circumference = 2 * Math.PI * 45;
+const offset = circumference - (pct / 100) * circumference;
+
+return (
+  <main className="max-w-3xl mx-auto px-6 py-12">
+    <div className="rounded-2xl border border-neutral-200 bg-white p-8 text-center mb-8">
+      <p className="text-sm text-neutral-500 mb-4">{name} · {title}</p>
+      <div className="relative w-32 h-32 mx-auto mb-4">
+        <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+          <circle cx="50" cy="50" r="45" fill="none" stroke="#F0EFEA" strokeWidth="8" />
+          <circle cx="50" cy="50" r="45" fill="none" stroke={ringColor} strokeWidth="8"
+            strokeDasharray={circumference} strokeDashoffset={offset} strokeLinecap="round" />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="serif text-3xl">{pct}%</span>
+        </div>
       </div>
-      <ol className="space-y-4">
-        {questions.map((q,i)=>{
-          const r = results.find(x=>x.id===q.id);
-          return (
-            <li key={q.id} className="rounded-xl border border-neutral-200 bg-white p-5">
-              <div className="flex justify-between mb-1">
-                <p className="font-medium">{i+1}. {q.question}</p>
-                <span className="text-sm text-[#4C3F91] whitespace-nowrap ml-3">{r?.awarded}/{r?.max}</span>
-              </div>
-              <p className="text-sm text-neutral-500">{r?.feedback}</p>
-            </li>
-          );
-        })}
-      </ol>
-    </main>
-  );
+      <p className="text-neutral-500">{score} / {maxScore} marks</p>
+    </div>
+    <ol className="space-y-4">
+      {questions.map((q,i)=>{
+        const r = results.find(x=>x.id===q.id);
+        return (
+          <li key={q.id} className="rounded-xl border border-neutral-200 bg-white p-5">
+            <div className="flex justify-between mb-1">
+              <p className="font-medium">{i+1}. {q.question}</p>
+              <span className="text-sm text-[#4C3F91] whitespace-nowrap ml-3">{r?.awarded}/{r?.max}</span>
+            </div>
+            <p className="text-sm text-neutral-500">{r?.feedback}</p>
+          </li>
+        );
+      })}
+    </ol>
+  </main>
+);
 }

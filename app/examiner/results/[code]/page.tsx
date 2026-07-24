@@ -17,10 +17,33 @@ export default function Results() {
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-12">
-      <h1 className="serif text-3xl mb-2">Results</h1>
-      <p className="text-sm text-neutral-500 mb-8">Exam code: {code} · {subs.length} submission{subs.length !== 1 ? "s" : ""}</p>
+      <h1 className="serif text-4xl md:text-5xl mb-2">Results</h1>
+      <p className="text-neutral-500 mb-8">Exam code: {code} · {subs.length} submission{subs.length !== 1 ? "s" : ""}</p>
 
-      {loading ? <p className="text-neutral-500">Loading…</p> : subs.length === 0 ? (
+      {subs.length > 0 && (
+        <div className="grid grid-cols-3 gap-3 mb-8">
+          <div className="rounded-xl border border-neutral-200 bg-white p-4 text-center">
+            <p className="text-2xl serif text-[#4C3F91]">{subs.length}</p>
+            <p className="text-xs text-neutral-400 mt-1">Submissions</p>
+          </div>
+          <div className="rounded-xl border border-neutral-200 bg-white p-4 text-center">
+            <p className="text-2xl serif text-[#4C3F91]">
+              {Math.round(subs.reduce((s,x)=>s+(x.score/x.max_score)*100,0)/subs.length)}%
+            </p>
+            <p className="text-xs text-neutral-400 mt-1">Average</p>
+          </div>
+          <div className="rounded-xl border border-neutral-200 bg-white p-4 text-center">
+            <p className="text-2xl serif text-[#4C3F91]">
+              {Math.max(...subs.map(x=>Math.round((x.score/x.max_score)*100)))}%
+            </p>
+            <p className="text-xs text-neutral-400 mt-1">Highest</p>
+          </div>
+        </div>
+      )}
+
+      {loading ? (
+        <p className="text-neutral-500">Loading…</p>
+      ) : subs.length === 0 ? (
         <p className="text-neutral-500">No submissions yet.</p>
       ) : (
         <div className="space-y-3">
