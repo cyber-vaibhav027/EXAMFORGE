@@ -2,6 +2,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import Watermark from "../../components/Watermark";
 
 type Q = { id:number; type:string; difficulty:string; question:string; options:string[]; marks:number };
 type Res = { id:number; awarded:number; max:number; feedback:string };
@@ -20,6 +21,7 @@ function ExamContent() {
   const [results, setResults] = useState<Res[]>([]);
   const [loading, setLoading] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const [email, setEmail] = useState("");
 
   const field = "w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-[#4C3F91]";
   const set = (id:number, v:string) => setAnswers(a => ({ ...a, [id]: v }));
@@ -29,6 +31,7 @@ function ExamContent() {
       if (!data.user) { router.push("/student/login"); return; }
       setName(data.user.user_metadata?.name || data.user.email || "Student");
       setUserId(data.user.id);
+      setEmail(data.user.email || "");
 
       const res = await fetch(`/api/exam/${code}`);
       if (!res.ok) { router.push("/student"); return; }

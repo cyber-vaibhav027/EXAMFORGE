@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import Watermark from "../components/Watermark";
 
 type ExamStat = { code: string; title: string; created_at: string; duration_minutes: number; studentCount: number; avgPct: number | null };
 
@@ -12,11 +13,13 @@ export default function ExaminerDashboard() {
   const [totalExams, setTotalExams] = useState(0);
   const [totalStudents, setTotalStudents] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
       if (!data.user) { router.push("/examiner/login"); return; }
       setName(data.user.user_metadata?.name || data.user.email || "Examiner");
+        setEmail(data.user.email || "");
 
       const res = await fetch(`/api/examiner-stats?examinerId=${data.user.id}`);
       const stats = await res.json();
@@ -36,12 +39,16 @@ export default function ExaminerDashboard() {
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-12">
+       <Watermark text={email} />
       <div className="mb-8 flex justify-between items-start">
         <div>
           <h1 className="serif text-4xl md:text-5xl mb-2">Hi, {name}</h1>
           <p className="text-neutral-500">Manage your exams and track student performance.</p>
         </div>
-        <button onClick={logout} className="text-sm text-neutral-400 hover:text-neutral-600">Log out</button>
+     <button onClick={logout}
+  className="text-sm text-neutral-600 border border-neutral-300 rounded-lg px-4 py-2 hover:border-[#4C3F91] hover:text-[#4C3F91] transition">
+  Log out
+</button>
       </div>
 
       {/* Quick stats */}

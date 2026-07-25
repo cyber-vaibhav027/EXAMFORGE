@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { Document, Packer, Paragraph, TextRun, HeadingLevel } from "docx";
 import { saveAs } from "file-saver";
+import Watermark from "../../components/Watermark";
 
 type Q = { id:number; type:string; difficulty:string; question:string; options:string[]; answer:string; marks:number };
 
@@ -36,11 +37,13 @@ export default function CreateExam() {
   const [topicsOpen, setTopicsOpen] = useState(false);
   const totalMarks = numMCQ * marksMCQ + numShort * marksShort + numLong * marksLong;
   const weightTotal = Object.values(weightages).reduce((a,b)=>a+b, 0);
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (!data.user) { router.push("/examiner/login"); return; }
       setUserId(data.user.id);
+        setEmail(data.user.email || "");
     });
   }, []);
 
@@ -190,6 +193,7 @@ export default function CreateExam() {
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-12">
+        <Watermark text={email} />
       <div className="mb-8 flex justify-between items-start">
         <div>
           <h1 className="serif text-4xl md:text-5xl mb-2">Create an exam</h1>
